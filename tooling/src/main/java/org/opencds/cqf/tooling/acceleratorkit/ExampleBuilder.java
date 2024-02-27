@@ -710,7 +710,12 @@ public class ExampleBuilder {
         while (index.get() < eds.size()) {
             ElementDefinition ed = eds.get(index.get());
             if (isContinuation(sd.getType(), ed.getId())) {
-                visitElement(sd, eds, index, r, elementValues, fc.getResourceDefinition(sd.getType()));
+                try{
+                    visitElement(sd, eds, index, r, elementValues, fc.getResourceDefinition(sd.getType()));
+                }catch(Exception e){
+                  break;
+                }
+                
             }
             else {
                 break;

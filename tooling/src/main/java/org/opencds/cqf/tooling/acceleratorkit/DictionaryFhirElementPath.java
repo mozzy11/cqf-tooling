@@ -33,10 +33,17 @@ public class DictionaryFhirElementPath {
                     case "patient": this.resourceType = "Patient"; break;
                     case "coverage": this.resourceType = "Coverage"; break;
                     case "medicationstatement": this.resourceType = "MedicationStatement"; break;
+                    case "client": this.resourceType = "Patient"; break;
                     default: this.resourceType = elements[0]; break;
                 }
                 this.resourcePath = String.join(".", Arrays.copyOfRange(elements, 1, elements.length));
             }
+        }else if(resource.startsWith("Skip if Gender")) {
+            this.resourceType = "Patient";
+            this.resourcePath = "gender";
+        }else{
+            this.resourceType = resource;
+            this.resourcePath = "";
         }
     }
 

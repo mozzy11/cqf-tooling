@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import jakarta.annotation.Nonnull;
 
@@ -204,34 +205,49 @@ public class Processor extends Operation {
         // Load the "CONFIG" page of the spreadsheet if it is present
         Sheet sheet = workbook.getSheet("CONFIG");
         if (sheet == null) {
-            logger.info("Sheet {} not found in the Workbook, so no processing was done.", "CONFIG");
-            return;
-        }
-
-        Iterator<Row> it = sheet.rowIterator();
-        while (it.hasNext()) {
-            Row row = it.next();
-            int headerRow = 1;
-            if (row.getRowNum() <= headerRow) {
-                continue;
-            }
-
-            String key = SpreadsheetHelper.getCellAsString(row.getCell(0));
-            String value = SpreadsheetHelper.getCellAsString(row.getCell(1));
-
-            switch (key) {
-                case "publisher": this.publisher = value; break;
-                case "content": this.content = value; break;
-                case "commonLibraryName": this.commonLibraryName = value; break;
-                case "scope": registerScope(value); break;
-                case "supportedCodeSystem": registerCodeSystem(value); break;
-                default:
-                    if (key.endsWith("Profile")) {
-                        registerProfile(key, value);
-                    }
-                    else {
-                        logger.warn("Unknown configuration key {}", key);
-                    }
+            this.publisher = "ITECH";
+            this.content = "HIV-DAK";
+            this.commonLibraryName = "WHOCommon";
+            registerScope("ancm|http://fhir.org/guides/who/smart-anc-mini");
+            registerCodeSystem("NIDA|https://cde.drugabuse.gov");
+            registerProfile("encounterProfile", "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-encounter");
+            logger.info("Sheet {} not found in the Workbook, so loded default config", "CONFIG");
+            
+        } else {
+            
+            Iterator<Row> it = sheet.rowIterator();
+            while (it.hasNext()) {
+                Row row = it.next();
+                int headerRow = 1;
+                if (row.getRowNum() <= headerRow) {
+                    continue;
+                }
+                
+                String key = SpreadsheetHelper.getCellAsString(row.getCell(0));
+                String value = SpreadsheetHelper.getCellAsString(row.getCell(1));
+                switch (key) {
+                    case "publisher":
+                        this.publisher = value;
+                        break;
+                    case "content":
+                        this.content = value;
+                        break;
+                    case "commonLibraryName":
+                        this.commonLibraryName = value;
+                        break;
+                    case "scope":
+                        registerScope(value);
+                        break;
+                    case "supportedCodeSystem":
+                        registerCodeSystem(value);
+                        break;
+                    default:
+                        if (key.endsWith("Profile")) {
+                            registerProfile(key, value);
+                        } else {
+                            logger.warn("Unknown configuration key {}", key);
+                        }
+                }
             }
         }
     }
@@ -544,7 +560,7 @@ public class Processor extends Operation {
             return null;
         }
 
-        int i = activityId.indexOf(" ");
+        int i = activityId.indexOf(".");
         if (i <= 1) {
             return null;
         }
@@ -625,6 +641,7 @@ public class Processor extends Operation {
 
     private String getName(Row row, HashMap<String, Integer> colIds) {
         String name = SpreadsheetHelper.getCellAsString(row, getColId(colIds, "Name"));
+        name = name != null? name : "";
         name = name
                 .replace("?", "")
                 .replace("–", "-");
@@ -676,6 +693,7 @@ public class Processor extends Operation {
             case "CPT": return "CPTComments";
             case "HCPCS": return "HCPCSComments";
             case "NDC": return "NDCComments";
+            case "CIEL": return "CIELComments";
         }
         throw new IllegalArgumentException(String.format("Unknown code system key %s", codeSystem));
     }
@@ -735,6 +753,9 @@ public class Processor extends Operation {
                 parentLabel = currentElement.getDataElementLabel();
             }
         }
+        if(StringUtils.isBlank(system)){
+            system = "http://fhir.org/guides/who/smart-anc-mini/CodeSystem/concept-codes";
+        }
         if (system != null && !system.isEmpty()) {
             String codeListString = SpreadsheetHelper.getCellAsString(row, getColId(colIds, "FhirR4Code"));
             // If there is no code, use the data element label, prefixed with the parentLabel, if there is one
@@ -749,7 +770,7 @@ public class Processor extends Operation {
                 }
             }
 
-            if (system.startsWith(projectCodeSystemBase)) {
+            if (StringUtils.isNotBlank(system)) {
                 CodeSystem codeSystem = resolveCodeSystem(system);
                 if (codeSystem == null) {
                     codeSystem = createCodeSystem("concept-codes", String.format("%sConceptCodes", contentId), projectCodeSystemBase, String.format("%s Concept Codes", contentId),
@@ -809,12 +830,18 @@ public class Processor extends Operation {
         DictionaryFhirElementPath fhirType = null;
         String resource = SpreadsheetHelper.getCellAsString(row, getColId(colIds, "FhirR4Resource"));
 
-        if (resource != null && !resource.isEmpty()) {
-            resource = resource.trim();
-            fhirType = new DictionaryFhirElementPath();
-            fhirType.setResource(resource);
-            fhirType.setFhirElementType(SpreadsheetHelper.getCellAsString(row, getColId(colIds, "FhirR4ResourceType")));
+        if (StringUtils.isBlank(resource)) {
+            resource = "Observation.value[x]";
         }
+
+        resource = resource.trim();
+        fhirType = new DictionaryFhirElementPath();
+        fhirType.setResource(resource);
+        String resourceType = SpreadsheetHelper.getCellAsString(row, getColId(colIds, "FhirR4ResourceType"));
+        if (StringUtils.isBlank(resourceType)) {
+            resourceType = "string";
+        }
+        fhirType.setFhirElementType(resourceType);
         return fhirType;
     }
 
@@ -827,6 +854,7 @@ public class Processor extends Operation {
     }
 
     private DictionaryElement createDataElement(String page, String group, Row row, HashMap<String, Integer> colIds) {
+        System.out.println("**************** page *** > : " + page);
         String type = SpreadsheetHelper.getCellAsString(row, getColId(colIds, "Type"));
         if (type != null) {
             type = type.trim();
@@ -857,6 +885,12 @@ public class Processor extends Operation {
         //String id = getNextElementId(activityCoding.getCode());
         String id = getDataElementID(row, colIds);
 
+        if(StringUtils.isBlank(id)){
+          id = "Empty ID";
+        }
+        if(StringUtils.isBlank(name)){
+            id = "Empty Name";
+          }
         DictionaryElement e = new DictionaryElement(id, name);
 
         // Populate based on the row
@@ -886,6 +920,7 @@ public class Processor extends Operation {
         DictionaryFhirElementPath fhirElementPath = getFhirElementPath(row, colIds);
         if (fhirElementPath != null) {
             e.setFhirElementPath(fhirElementPath);
+           // e.getChoices().setFhirElementPath(fhirElementPath);
         }
         e.setMasterDataElementPath(SpreadsheetHelper.getCellAsString(row, getColId(colIds, "MasterDataElementPath")));
         e.setBaseProfile(SpreadsheetHelper.getCellAsString(row, getColId(colIds, "FhirR4BaseProfile")));
@@ -902,9 +937,9 @@ public class Processor extends Operation {
     }
 
     private void addInputOptionToParentElement(Row row, HashMap<String, Integer> colIds) {
-        String parentId = getDataElementID(currentInputOptionParentRow, colIds).trim();
-        String parentName = getDataElementLabel(currentInputOptionParentRow, colIds).trim();
-
+        String parentId = getDataElementID(currentInputOptionParentRow, colIds) != null ? getDataElementID(currentInputOptionParentRow, colIds).trim() : " ";
+        String parentName = getDataElementLabel(currentInputOptionParentRow, colIds) != null ? getDataElementLabel(currentInputOptionParentRow, colIds).trim() : "";
+        System.out.println(">>> debug parent Name> : " + parentName);
         if ((parentId != null && !parentId.isEmpty()) || (parentName != null && !parentName.isEmpty()))
         {
             DictionaryElement parentElement = elementMap.get(parentName);
@@ -912,6 +947,8 @@ public class Processor extends Operation {
                 // The choices FHIR Element Path is set by the first "Input Option" row in the group and will NOT be
                 // overridden, if set, by subsequent input option rows.
                 DictionaryFhirElementPath parentChoicesFhirElementPath = parentElement.getChoices().getFhirElementPath();
+                //System.out.println(">>> debud path element>> : " + parentElement.getPage());
+               // System.out.println(">>> debud path choice oath >> : " + parentChoicesFhirElementPath);
                 if (parentChoicesFhirElementPath == null) {
                     DictionaryFhirElementPath parentElementFhirElementPath = parentElement.getFhirElementPath();
                     parentChoicesFhirElementPath = getFhirElementPath(row, colIds);
@@ -991,7 +1028,8 @@ public class Processor extends Operation {
         // If there are no custom codes created for the element, and there is only one terminology code provided, use that code as the code for the element
         if (codes.size() == 0) {
             if (mappings.size() > 1) {
-                logger.warn("Could not determine data element codes for element {}: {} because no custom code was provided and more than one terminology mapping is specified for the element.", elementId, elementLabel);
+                codes.add(mappings.get(0));
+                //logger.warn("Could not determine data element codes for element {}: {} because no custom code was provided and more than one terminology mapping is specified for the element.", elementId, elementLabel);
             }
             if (mappings.size() == 1) {
                 codes.add(mappings.get(0));
@@ -1008,6 +1046,7 @@ public class Processor extends Operation {
 
     private void processDataElementPage(Workbook workbook, String page, String scope) {
         Sheet sheet = workbook.getSheet(page);
+        System.out.println(">>> debug parent page >>>>>>>>>>>>>>> : " + page);
         if (sheet == null) {
             logger.info("Sheet {} not found in the Workbook, so no processing was done.", page);
             return;
@@ -1021,7 +1060,7 @@ public class Processor extends Operation {
         String currentGroup = null;
         while (it.hasNext()) {
             Row row = it.next();
-            int headerRow = 1;
+            int headerRow = 0;
             // Skip rows prior to header row
             if (row.getRowNum() < headerRow) {
                 continue;
@@ -1121,21 +1160,30 @@ public class Processor extends Operation {
                         case "icd-10-who":
                         case "icd-10 code":
                         case "icd-10?code": colIds.put("ICD-10", cell.getColumnIndex()); break;
+                        case "icd-10 comments / considerations":
                         case "icd-10?comments / considerations": colIds.put("ICD-10Comments", cell.getColumnIndex()); break;
+                        case "icf code":
                         case "icf?code": colIds.put("ICF", cell.getColumnIndex()); break;
+                        case "icf comments / considerations":
                         case "icf?comments / considerations": colIds.put("ICFComments", cell.getColumnIndex()); break;
                         case "ichi?code":
+                        case "ichi (beta 3) code":
                         case "ichi (beta 3)?code": colIds.put("ICHI", cell.getColumnIndex()); break;
+                        case "ichi comments / considerations":
                         case "ichi?comments / considerations": colIds.put("ICHIComments", cell.getColumnIndex()); break;
                         case "snomed-ct":
                         case "snomed-ct code":
                         case "snomed ct":
                         case "snomed ct?code":
+                        case "snomed ct international version code":
                         case "snomed ct international version?code": colIds.put("SNOMED-CT", cell.getColumnIndex()); break;
+                        case "snomed ct international version comments / considerations":
                         case "snomed ct international version?comments / considerations": colIds.put("SNOMEDComments", cell.getColumnIndex()); break;
                         case "loinc":
                         case "loinc code":
+                        case "loinc version 2.68 code":
                         case "loinc version 2.68?code": colIds.put("LOINC", cell.getColumnIndex()); break;
+                        case "loinc version 2.68 comments / considerations":
                         case "loinc version 2.68?comments / considerations": colIds.put("LOINCComments", cell.getColumnIndex()); break;
                         case "rxnorm":
                         case "rxnorm code":
@@ -1144,6 +1192,7 @@ public class Processor extends Operation {
                         case "icd-11":
                         case "icd-11 code":
                         case "icd-11?code":colIds.put("ICD-11", cell.getColumnIndex()); break;
+                        case "icd-11 comments / considerations":
                         case "icd-11?comments / considerations": colIds.put("ICD-11Comments", cell.getColumnIndex()); break;
                         case "ciel": colIds.put("CIEL", cell.getColumnIndex()); break;
                         case "openmrs entity parent": colIds.put("OpenMRSEntityParent", cell.getColumnIndex()); break;
@@ -1403,7 +1452,8 @@ public class Processor extends Operation {
 
     private String toId(String name) {
         if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("Name cannot be null or empty");
+           // throw new IllegalArgumentException("Name cannot be null or empty");
+           name = "Empty";
         }
 
         if (name.endsWith(".")) {
@@ -2000,7 +2050,9 @@ public class Processor extends Operation {
                     // The code in the Primary Code Path Data Element entry should always have priority over the preferred (value[x])
                     if ((existingCode == null || isPrimaryCodePath) && (isPreferredCodePath)) {
                         //TODO: Bind to valueset rather than fixed code
-                        existingPrimaryCodePathElement.setFixed(element.getPrimaryCodes().getCodes().get(0).toCodeableConcept());
+                        if(element.getPrimaryCodes().getCodes().size() > 0){
+                            existingPrimaryCodePathElement.setFixed(element.getPrimaryCodes().getCodes().get(0).toCodeableConcept());
+                        }
                     }
                 }
             }
@@ -2137,11 +2189,11 @@ public class Processor extends Operation {
                     }
                 }
             }
-
             ensureChoicesDataElement(element, sd);
 
         } catch (Exception e) {
             logger.error(String.format("Error ensuring element for '%s'. Error: %s ", element.getLabel(), e));
+            e.printStackTrace();
         }
     }
 
@@ -2168,7 +2220,6 @@ public class Processor extends Operation {
             if (parentCustomValueSetName == null || parentCustomValueSetName.isEmpty()) {
                 parentCustomValueSetName = dictionaryElement.getDataElementLabel();
             }
-
             List<ValueSet> valueSets = new ArrayList<>();
             for (Map.Entry<String, List<DictionaryCode>> vs: valueSetCodes.entrySet()) {
                 ValueSet valueSet = ensureValueSetWithCodes(getValueSetId(vs.getKey()), vs.getKey(), new CodeCollection(vs.getValue()));
@@ -2196,7 +2247,10 @@ public class Processor extends Operation {
                     bindValueSetToElement(existingChoicesElement, valueSetToBind, dictionaryElement.getBindingStrength());
                     bindQuestionnaireItemAnswerValueSet(dictionaryElement, valueSetToBind);
                     if (!isObservation) {
-                        ensureDataElementRetrieve(sd, dictionaryElement, valueSetToBind.getId());
+                       // if(valueSetToBind != null){
+                            ensureDataElementRetrieve(sd, dictionaryElement, valueSetToBind.getId());
+
+                       // }
                     }
                 }
             } else {
@@ -2236,18 +2290,31 @@ public class Processor extends Operation {
                 addElementToStructureDefinition(sd, ed);
                 applyDataElementToElementDefinition(dictionaryElement, sd, ed);
                 if (!isObservation) {
-                    ensureDataElementRetrieve(sd, dictionaryElement, valueSetToBind.getId());
+                   // if(valueSetToBind != null){
+                        ensureDataElementRetrieve(sd, dictionaryElement, valueSetToBind.getId());
+
+                   // }
                 }
             }
         }
     }
 
     private void bindQuestionnaireItemAnswerValueSet(DictionaryElement dictionaryElement, ValueSet valueSetToBind) {
-        Questionnaire questionnaire =
-                questionnaires.stream().filter(q -> q.getId().equalsIgnoreCase(toUpperId(getActivityCoding(dictionaryElement.getPage()).getCode()))).findFirst().get();
-        Questionnaire.QuestionnaireItemComponent questionnaireItem =
-                questionnaire.getItem().stream().filter(i -> i.getText().equalsIgnoreCase(dictionaryElement.getDescription() != null ? dictionaryElement.getDescription() : dictionaryElement.getLabel())).findFirst().get();
-        questionnaireItem.setAnswerValueSet(valueSetToBind.getUrl());
+        Optional<Questionnaire> questionnaire = questionnaires.stream()
+                .filter(q -> q.getId().equalsIgnoreCase(toUpperId(getActivityCoding(dictionaryElement.getPage()).getCode())))
+                .findFirst();
+        if (questionnaire.isPresent()) {
+            Optional<Questionnaire.QuestionnaireItemComponent> questionnaireItem = questionnaire.get().getItem().stream()
+                    .filter(i -> i.getText()
+                            .equalsIgnoreCase(dictionaryElement.getDescription() != null ? dictionaryElement.getDescription()
+                                    : dictionaryElement.getLabel()))
+                    .findFirst();
+            if (questionnaireItem.isPresent()) {
+                if(valueSetToBind != null){
+                    questionnaireItem.get().setAnswerValueSet(valueSetToBind.getUrl());
+                } 
+            }
+        }
     }
 
     private void ensureSliceAndBaseElementWithSlicing(DictionaryElement dictionaryElement, DictionaryFhirElementPath elementPath,
@@ -2443,12 +2510,16 @@ public class Processor extends Operation {
         }
     }
 
-    private void bindValueSetToElement(ElementDefinition targetElement, ValueSet valueSet, Enumerations.BindingStrength bindingStrength) {
-        ElementDefinition.ElementDefinitionBindingComponent binding =
-            new ElementDefinition.ElementDefinitionBindingComponent();
+    private void bindValueSetToElement(ElementDefinition targetElement, ValueSet valueSet,
+            Enumerations.BindingStrength bindingStrength) {
+        ElementDefinition.ElementDefinitionBindingComponent binding = new ElementDefinition.ElementDefinitionBindingComponent();
         binding.setStrength(bindingStrength);
-        binding.setValueSet(valueSet.getUrl());
-        binding.addExtension("http://hl7.org/fhir/StructureDefinition/elementdefinition-bindingName", valueSet.getTitleElement());
+       // if (valueSet != null) {
+            binding.setValueSet(valueSet.getUrl());
+            binding.addExtension("http://hl7.org/fhir/StructureDefinition/elementdefinition-bindingName",
+                valueSet.getTitleElement());
+            
+       // }
         targetElement.setBinding(binding);
     }
 
@@ -2492,6 +2563,7 @@ public class Processor extends Operation {
 
         // Group by Supported Terminology System
         for (String codeSystemUrl : codes.getCodeSystemUrls()) {
+            
             List<DictionaryCode> systemCodes = codes.getCodesForSystem(codeSystemUrl);
 
             if (systemCodes.size() > 0) {
@@ -2699,7 +2771,7 @@ public class Processor extends Operation {
         codeSystem.setContent(CodeSystem.CodeSystemContentMode.COMPLETE);
         codeSystem.setCaseSensitive(true);
 
-        logger.info("Creating CodeSystem: {}", codeSystem.getUrl());
+       // logger.info("Creating CodeSystem: {}", codeSystem.getUrl());
         codeSystems.add(codeSystem);
 
         return codeSystem;

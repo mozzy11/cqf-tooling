@@ -21,11 +21,13 @@ Run a specific operation using (example running VSAC Spreadsheet conversion):
 ```bash
 mvn exec:java \
 -Dexec.mainClass="org.opencds.cqf.tooling.cli.Main" \
--Dexec.args="-VsacXlsxToValueSetBatch \
--ptsd=src/test/resources/org/opencds/cqf/tooling/terminology \
--op=target/test/resources/org/opencds/cqf/tooling/terminology/output \
--setname=true \
--vssrc=cms"
+-Dexec.args="-ProcessAcceleratorKit \
+-pts=/Users/mutesasiramoses/Desktop/dev/HIV-DAK/cqf-tooling/input/WHO-UCN-HHS-SIA-2022.1-eng.xlsx \
+-op=/Users/mutesasiramoses/Desktop/dev/HIV-DAK/cqf-tooling/output \
+-s='hiv' \
+-dep='HIV.A. Registration,HIV.B. HTS Visit,HIV.C. PrEP Visit,HIV.D. Care-Treatment Core,\
+HIV.D.Care-Treatment Additional,HIV.D. TB-HIV,\
+HIV.E-F. PMTCT,HIV.G. Diagnostics,HIV.H. Follow Up,HIV.I. Referral,HIV. Surveillance,HIV. Configuration'"
 ```
 
 Executable jars are produced by the CI system on Maven Central: [Download executable jar](https://oss.sonatype.org/service/local/artifact/maven/redirect?r=releases&g=org.opencds.cqf&a=tooling-cli&v=LATEST)
@@ -86,3 +88,27 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
+
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Run Java",
+            "request": "launch",
+            "mainClass": "org.opencds.cqf.tooling.cli.Main",
+            "projectName": "tooling-cli",
+            "args": [
+                "-ProcessAcceleratorKit",
+                "-op=/Users/mutesasiramoses/Desktop/dev/HIV-DAK/cqf-tooling/output",
+                "-s='hiv'",
+                "-dep='HIV.A.Registration,HIV.B.HTSVisit,HIV.C.PrEPVisit,HIV.D.Care-TreatmentCore,HIV.D.Care-TreatmentAdditional,HIV.D.TB-HIV,HIV.E-F.PMTCT,HIV.G.Diagnostics,HIV.H.FollowUp,HIV.I.Referral,HIV.Surveillance,HIV.Configuration'",
+                "-pts=/Users/mutesasiramoses/Desktop/dev/HIV-DAK/cqf-tooling/input/WHO-UCN-HHS-SIA-2022.1-engedited.xlsx",
+            ]
+        }
+    ]
+}
