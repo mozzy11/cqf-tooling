@@ -154,7 +154,7 @@ package org.opencds.cqf.tooling.cli;
         - Accelerator Kit Processor
             - This tooling converts a WHO accelerator kit data dictionary to a set of profiles, questionnaires, plan definitions, and libraries
             - mvn exec:java -Dexec.args="-ProcessAcceleratorKit [-pathtospreadsheet | -pts] [-dataelementpages | -dep] (-outputpath | -op) (-encoding | -e)"
-            - Example: mvn exec:java -Dexec.args="-ProcessAcceleratorKit -pts=ANC-Primary-Data-Dictionary.xlsx -dep=""ANC Reg,Quick Check,Profile,S&F,PE,Tests,C&T"""
+            - Example: mvn exec:java -Dexec.mainClass="org.opencds.cqf.tooling.cli.Main" -Dexec.args="-ProcessAcceleratorKit -pts=/Users/mutesasiramoses/Desktop/dev/HIV-DAK/cqf-tooling/input/WHO-UCN-HHS-SIA-2022.1-eng.xlsx  -op=/Users/mutesasiramoses/Desktop/dev/HIV-DAK/cqf-tooling/output -dep=""HIV.A. Registration,HIV.B. HTS Visit,HIV.C. PrEP Visit,HIV.D. Care-Treatment Core,HIV.D.Care-Treatment Additional,HIV.D. TB-HIV,HIV.E-F. PMTCT,HIV.G. Diagnostics,HIV.H. Follow Up,HIV.I. Referral,HIV. Surveillance,HIV. Configuration"""
 
         - Decision Table Processor
             - This tooling converts a WHO accelerator kit decision table to a set of PlanDefinition resources

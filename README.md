@@ -16,7 +16,11 @@ Build the project with:
 mvn package
 ```
 
-Run a specific operation using (example running VSAC Spreadsheet conversion):
+Run a specific operation using (example running Accelerator Kit Processor):
+
+```bash
+cd tooling-cli 
+```
 
 ```bash
 mvn exec:java \
@@ -29,12 +33,37 @@ mvn exec:java \
 HIV.D.Care-Treatment Additional,HIV.D. TB-HIV,\
 HIV.E-F. PMTCT,HIV.G. Diagnostics,HIV.H. Follow Up,HIV.I. Referral,HIV. Surveillance,HIV. Configuration'"
 ```
+For running directly in VS code , add this to Launch.json
+
+```bash
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Run Java",
+            "request": "launch",
+            "mainClass": "org.opencds.cqf.tooling.cli.Main",
+            "projectName": "tooling-cli",
+            "args": [
+                "-ProcessAcceleratorKit",
+                "-op=/Users/mutesasiramoses/Desktop/dev/HIV-DAK/cqf-tooling/output",
+                "-dep='HIV.A.Registration,HIV.B.HTSVisit,HIV.C.PrEPVisit,HIV.D.Care-TreatmentCore,HIV.D.Care-TreatmentAdditional,HIV.D.TB-HIV,HIV.E-F.PMTCT,HIV.G.Diagnostics,HIV.H.FollowUp,HIV.I.Referral,HIV.Surveillance,HIV.Configuration'",
+                "-pts=/Users/mutesasiramoses/Desktop/dev/HIV-DAK/cqf-tooling/input/WHO-UCN-HHS-SIA-2022.1-eng.xlsx"
+            ]
+        }
+    ]
+}
+```
 
 Executable jars are produced by the CI system on Maven Central: [Download executable jar](https://oss.sonatype.org/service/local/artifact/maven/redirect?r=releases&g=org.opencds.cqf&a=tooling-cli&v=LATEST)
 
 This can be run with `java -jar tooling-cli-2.0.0.jar -VsacXlsxToValueSetBatch`
 
-Documentation of the various operations is provided in the [Main](src/main/java/org/opencds/cqf/tooling/Main.java) class.
+Documentation of the various operations is provided in the [Main](tooling-cli/src/main/java/org/opencds/cqf/tooling/cli/Main.java) class.
 
 ## Commit Policy
 
@@ -88,27 +117,3 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-
-
-{
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "type": "java",
-            "name": "Run Java",
-            "request": "launch",
-            "mainClass": "org.opencds.cqf.tooling.cli.Main",
-            "projectName": "tooling-cli",
-            "args": [
-                "-ProcessAcceleratorKit",
-                "-op=/Users/mutesasiramoses/Desktop/dev/HIV-DAK/cqf-tooling/output",
-                "-s='hiv'",
-                "-dep='HIV.A.Registration,HIV.B.HTSVisit,HIV.C.PrEPVisit,HIV.D.Care-TreatmentCore,HIV.D.Care-TreatmentAdditional,HIV.D.TB-HIV,HIV.E-F.PMTCT,HIV.G.Diagnostics,HIV.H.FollowUp,HIV.I.Referral,HIV.Surveillance,HIV.Configuration'",
-                "-pts=/Users/mutesasiramoses/Desktop/dev/HIV-DAK/cqf-tooling/input/WHO-UCN-HHS-SIA-2022.1-engedited.xlsx",
-            ]
-        }
-    ]
-}
