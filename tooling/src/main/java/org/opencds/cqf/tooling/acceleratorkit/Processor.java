@@ -2249,10 +2249,7 @@ public class Processor extends Operation {
                     bindValueSetToElement(existingChoicesElement, valueSetToBind, dictionaryElement.getBindingStrength());
                     bindQuestionnaireItemAnswerValueSet(dictionaryElement, valueSetToBind);
                     if (!isObservation) {
-                       // if(valueSetToBind != null){
                             ensureDataElementRetrieve(sd, dictionaryElement, valueSetToBind.getId());
-
-                       // }
                     }
                 }
             } else {
@@ -2292,10 +2289,7 @@ public class Processor extends Operation {
                 addElementToStructureDefinition(sd, ed);
                 applyDataElementToElementDefinition(dictionaryElement, sd, ed);
                 if (!isObservation) {
-                   // if(valueSetToBind != null){
                         ensureDataElementRetrieve(sd, dictionaryElement, valueSetToBind.getId());
-
-                   // }
                 }
             }
         }
@@ -2516,12 +2510,10 @@ public class Processor extends Operation {
             Enumerations.BindingStrength bindingStrength) {
         ElementDefinition.ElementDefinitionBindingComponent binding = new ElementDefinition.ElementDefinitionBindingComponent();
         binding.setStrength(bindingStrength);
-       // if (valueSet != null) {
             binding.setValueSet(valueSet.getUrl());
             binding.addExtension("http://hl7.org/fhir/StructureDefinition/elementdefinition-bindingName",
                 valueSet.getTitleElement());
             
-       // }
         targetElement.setBinding(binding);
     }
 
