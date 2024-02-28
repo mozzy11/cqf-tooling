@@ -28,7 +28,6 @@ mvn exec:java \
 -Dexec.args="-ProcessAcceleratorKit \
 -pts=/Users/mutesasiramoses/Desktop/dev/HIV-DAK/cqf-tooling/input/WHO-UCN-HHS-SIA-2022.1-eng.xlsx \
 -op=/Users/mutesasiramoses/Desktop/dev/HIV-DAK/cqf-tooling/output \
--s='hiv' \
 -dep='HIV.A. Registration,HIV.B. HTS Visit,HIV.C. PrEP Visit,HIV.D. Care-Treatment Core,\
 HIV.D.Care-Treatment Additional,HIV.D. TB-HIV,\
 HIV.E-F. PMTCT,HIV.G. Diagnostics,HIV.H. Follow Up,HIV.I. Referral,HIV. Surveillance,HIV. Configuration'"
