@@ -949,8 +949,6 @@ public class Processor extends Operation {
                 // The choices FHIR Element Path is set by the first "Input Option" row in the group and will NOT be
                 // overridden, if set, by subsequent input option rows.
                 DictionaryFhirElementPath parentChoicesFhirElementPath = parentElement.getChoices().getFhirElementPath();
-                //System.out.println(">>> debud path element>> : " + parentElement.getPage());
-               // System.out.println(">>> debud path choice oath >> : " + parentChoicesFhirElementPath);
                 if (parentChoicesFhirElementPath == null) {
                     DictionaryFhirElementPath parentElementFhirElementPath = parentElement.getFhirElementPath();
                     parentChoicesFhirElementPath = getFhirElementPath(row, colIds);
@@ -2765,7 +2763,7 @@ public class Processor extends Operation {
         codeSystem.setContent(CodeSystem.CodeSystemContentMode.COMPLETE);
         codeSystem.setCaseSensitive(true);
 
-       // logger.info("Creating CodeSystem: {}", codeSystem.getUrl());
+        logger.info("Creating CodeSystem: {}", codeSystem.getUrl());
         codeSystems.add(codeSystem);
 
         return codeSystem;
