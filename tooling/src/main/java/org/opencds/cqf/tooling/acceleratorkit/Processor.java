@@ -625,6 +625,9 @@ public class Processor extends Operation {
 
     private String getDataElementLabel(Row row, HashMap<String, Integer> colIds) {
         String dataElementLabel = SpreadsheetHelper.getCellAsString(row, getColId(colIds, "DataElementLabel"));
+        if(dataElementLabel == null){
+          dataElementLabel = "No Label";
+        }
         dataElementLabel = dataElementLabel
                 .replace("?", "")
                 .replace("–", "-");
@@ -854,7 +857,6 @@ public class Processor extends Operation {
     }
 
     private DictionaryElement createDataElement(String page, String group, Row row, HashMap<String, Integer> colIds) {
-        System.out.println("**************** page *** > : " + page);
         String type = SpreadsheetHelper.getCellAsString(row, getColId(colIds, "Type"));
         if (type != null) {
             type = type.trim();
@@ -939,7 +941,7 @@ public class Processor extends Operation {
     private void addInputOptionToParentElement(Row row, HashMap<String, Integer> colIds) {
         String parentId = getDataElementID(currentInputOptionParentRow, colIds) != null ? getDataElementID(currentInputOptionParentRow, colIds).trim() : " ";
         String parentName = getDataElementLabel(currentInputOptionParentRow, colIds) != null ? getDataElementLabel(currentInputOptionParentRow, colIds).trim() : "";
-        System.out.println(">>> debug parent Name> : " + parentName);
+
         if ((parentId != null && !parentId.isEmpty()) || (parentName != null && !parentName.isEmpty()))
         {
             DictionaryElement parentElement = elementMap.get(parentName);
@@ -1046,7 +1048,6 @@ public class Processor extends Operation {
 
     private void processDataElementPage(Workbook workbook, String page, String scope) {
         Sheet sheet = workbook.getSheet(page);
-        System.out.println(">>> debug parent page >>>>>>>>>>>>>>> : " + page);
         if (sheet == null) {
             logger.info("Sheet {} not found in the Workbook, so no processing was done.", page);
             return;
@@ -1131,6 +1132,7 @@ public class Processor extends Operation {
                         case "multiple choice":
                         case "multiple choice type":
                         case "multiple choice (if applicable)":
+                        case "multiple choice type (if applicable)":
                         case "multiple choice type ?(if applicable)":
                             colIds.put("MultipleChoiceType", cell.getColumnIndex()); break;
                         case "input options": colIds.put("Choices", cell.getColumnIndex()); break;
