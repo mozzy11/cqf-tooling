@@ -1257,7 +1257,7 @@ public class Processor extends Operation {
     private Questionnaire createQuestionnaireForPage(Sheet sheet) {
         Questionnaire questionnaire = new Questionnaire();
         Coding activityCoding = getActivityCoding(sheet.getSheetName());
-        questionnaire.setId(toUpperId(activityCoding.getCode()));
+        questionnaire.setId(sheet.getSheetName());
 
         questionnaire.getExtension().add(
                 new Extension("http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeCapability", new CodeType("shareable")));
@@ -2763,7 +2763,7 @@ public class Processor extends Operation {
         codeSystem.setContent(CodeSystem.CodeSystemContentMode.COMPLETE);
         codeSystem.setCaseSensitive(true);
 
-        logger.info("Creating CodeSystem: {}", codeSystem.getUrl());
+        //logger.info("Creating CodeSystem: {}", codeSystem.getUrl());
         codeSystems.add(codeSystem);
 
         return codeSystem;
