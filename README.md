@@ -58,6 +58,32 @@ For running directly in VS code , add this to Launch.json
 }
 ```
 
+For Running  Decision Table Processor
+
+```bash 
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Run Java",
+            "request": "launch",
+            "mainClass": "org.opencds.cqf.tooling.cli.Main",
+            "projectName": "tooling-cli",
+            "args": [
+                "-ProcessDecisionTables",
+                "-op=/Users/mutesasiramoses/Desktop/dev/HIV-DAK/cqf-tooling/output",
+                "-dtp='HIV.S.1RecommendedServices,HIV.DT.01Seriouslyill,HIV.DT.02TestUsingAlgorithm,HIV.DT.03RetestRecommendation,HIV.DT.04PrEPEligibility,HIV.DT.05PEPorPrEPRegimen,HIV.DT.06ScreenforTB,HIV.DT.07TreatmentFailure,HIV.DT.08DetScreenings,HIV.DT.09ClinicalstageHIV,HIV.DT.10DetermineARTRegimen,HIV.DT.11DrugInteractions'",
+                "-pts=/Users/mutesasiramoses/Desktop/dev/HIV-DAK/cqf-tooling/input/WHO-UCN-HHS-SIA-2022.2-eng.xlsx"
+            ]
+        }
+    ]
+}
+```
+
 Executable jars are produced by the CI system on Maven Central: [Download executable jar](https://oss.sonatype.org/service/local/artifact/maven/redirect?r=releases&g=org.opencds.cqf&a=tooling-cli&v=LATEST)
 
 This can be run with `java -jar tooling-cli-2.0.0.jar -VsacXlsxToValueSetBatch`

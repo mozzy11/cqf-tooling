@@ -153,7 +153,14 @@ public class DTProcessor extends Operation {
             Iterator<Cell> cells = row.cellIterator();
             while (cells.hasNext()) {
                 Cell cell = cells.next();
-                String cellValue = cell.getStringCellValue().toLowerCase();
+                
+                String cellValue;
+                try{
+                    cellValue = cell.getStringCellValue().toLowerCase();
+                }catch(IllegalStateException e){
+                    cellValue = Double.toString(cell.getNumericCellValue());
+                }
+                
                 if (cellValue.startsWith("decision")) {
                     PlanDefinition planDefinition = processDecisionTable(workbook, it, cells);
                     if (planDefinition != null) {
@@ -420,7 +427,11 @@ public class DTProcessor extends Operation {
 
         for (int i=0; i < valueColumnIndexes.length - 1; i++) {
             int columnIndex = valueColumnIndexes[i];
-            Cell cell = row.getCell(columnIndex);
+            Cell cell = null;
+            if(columnIndex >= 0){
+                cell = row.getCell(columnIndex);
+            }
+            
             if (cell != null) {
                 String columnValueString = cell.getStringCellValue();
                 if (columnValueString == null || columnValueString.isEmpty()) {
