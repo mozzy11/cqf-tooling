@@ -67,16 +67,16 @@ public class Processor extends Operation {
 
     // TODO: These need to be per scope
     private String dataElementIdentifierSystem = "http://fhir.org/guides/nachc/hiv-cds/Identifier/data-elements";
-    private String contentId;
+    private String contentId =  "itech-uw";
     private String activityCodeSystemUrl = "http://fhir.org/guides/nachc/hiv-cds/CodeSystem/activity-codes";
 
     private String defaultCodeSystemUrl = "http://fhir.org/guides/nachc/hiv-cds/CodeSystem/";
-    private String projectCodeSystemBase;
+    private String projectCodeSystemBase = "http://fhir.org/guides/itech-uw";
 
     private int questionnaireItemLinkIdCounter = 1;
 
     // Canonical Base
-    private String canonicalBase = null;
+    private String canonicalBase = "http://fhir.org/guides/itech-uw";
     public void setCanonicalBase(String value) {
         canonicalBase = value;
         projectCodeSystemBase = canonicalBase;// + "/CodeSystem/anc-custom-codes"; //http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes
@@ -757,7 +757,7 @@ public class Processor extends Operation {
             }
         }
         if(StringUtils.isBlank(system)){
-            system = "http://fhir.org/guides/who/smart-anc-mini/CodeSystem/concept-codes";
+            system = "http://fhir.org/guides/itech-uw/who-smart-hiv-dak/CodeSystem/concept-codes";
         }
         if (system != null && !system.isEmpty()) {
             String codeListString = SpreadsheetHelper.getCellAsString(row, getColId(colIds, "FhirR4Code"));
@@ -775,8 +775,15 @@ public class Processor extends Operation {
 
             if (StringUtils.isNotBlank(system)) {
                 CodeSystem codeSystem = resolveCodeSystem(system);
+                if(codeSystem == null){
+                  if(codeSystems != null){
+                     if(codeSystems.size()>0){
+                       codeSystem = codeSystems.get(0);
+                     }
+                  }
+                }
                 if (codeSystem == null) {
-                    codeSystem = createCodeSystem("concept-codes", String.format("%sConceptCodes", contentId), projectCodeSystemBase, String.format("%s Concept Codes", contentId),
+                    codeSystem = createCodeSystem("concept-codes", String.format("%sConceptCodes", contentId), system, String.format("%s Concept Codes", contentId),
                             "Set of codes representing all concepts used in the implementation guide");
                 }
 
@@ -2750,7 +2757,7 @@ public class Processor extends Operation {
         CodeSystem codeSystem = new CodeSystem();
 
         codeSystem.setId(toId(id));
-        codeSystem.setUrl(String.format("%s/CodeSystem/%s", canonicalBase, codeSystem.getId()));
+        codeSystem.setUrl(canonicalBase);
         // TODO: version
         codeSystem.setName(toName(name));
         codeSystem.setTitle(String.format("%s", title != null ? title : name));
@@ -2957,7 +2964,6 @@ public class Processor extends Operation {
         if (codeSystems != null && codeSystems.size() > 0) {
             String codeSystemPath = getCodeSystemPath(scopePath);
             ensureCodeSystemPath(scopePath);
-
             for (CodeSystem cs : codeSystems) {
                 writeResource(codeSystemPath, cs);
 
