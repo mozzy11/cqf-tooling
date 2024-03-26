@@ -133,8 +133,8 @@ public abstract class BaseLibraryGenerator<L extends IBaseResource, T extends Ba
         File cqlContentLib = new File("/home/moses/Desktop/Dev/Projects/HIV-DAK/CQF-TOOL/cqf-tooling/output/CQL/FHIRHelpers.cql");
         File cqlContentLib2 = new File("/home/moses/Desktop/Dev/Projects/HIV-DAK/CQF-TOOL/cqf-tooling/output/CQL/FHIRCommon.cql");
         File cqlContentLib3 = new File("/home/moses/Desktop/Dev/Projects/HIV-DAK/CQF-TOOL/cqf-tooling/output/CQL/WHOCommon.cql");
-        File cqlContentLib4 = new File("/home/moses/Desktop/Dev/Projects/HIV-DAK/CQF-TOOL/cqf-tooling/output/CQL/HIVIndicatorCommon.cql");
-        cqlFiles = new File[] { cqlContent ,cqlContentLib ,cqlContentLib2 ,cqlContentLib3 ,cqlContentLib4};
+        //File cqlContentLib4 = new File("/home/moses/Desktop/Dev/Projects/HIV-DAK/CQF-TOOL/cqf-tooling/output/CQL/HIVIndicatorCommon.cql");
+        cqlFiles = new File[] { cqlContent ,cqlContentLib ,cqlContentLib2 ,cqlContentLib3 };
 /*
         cqlContentDir = cqlContent.getParentFile();
         pathToCqlContentDir = cqlContentDir.getPath();
