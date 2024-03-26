@@ -212,9 +212,9 @@ public class DTProcessor extends Operation {
         String decisionTitle = cell.getStringCellValue().trim();
         int index = decisionTitle.indexOf(' ');
         if (index < 0) {
-            throw new IllegalArgumentException("Expected business rule title of the form '<ID> <Title>'");
+            //throw new IllegalArgumentException("Expected business rule title of the form '<ID> <Title>'");
         }
-        String decisionIdentifier = decisionTitle.substring(0, index);
+        String decisionIdentifier = decisionTitle;//.substring(0, index);
         // String decisionName = decisionTitle.substring(index + 1);
         String decisionId = decisionIdentifier.replace(".", "");
 
@@ -284,6 +284,7 @@ public class DTProcessor extends Operation {
         }
 
         row = it.next();
+        row = it.next();
 
         cells = row.cellIterator();
         int inputColumnIndex = -1;
@@ -293,8 +294,11 @@ public class DTProcessor extends Operation {
         int referenceColumnIndex = -1;
         while (cells.hasNext()) {
             cell = cells.next();
+            System.out.println(cell.getStringCellValue());
             if (cell.getStringCellValue().toLowerCase().startsWith("input")
                 || cell.getStringCellValue().toLowerCase().startsWith("inputs")
+                || cell.getStringCellValue().equals("R")
+                || cell.getStringCellValue().equals("F")
                 || cell.getStringCellValue().toLowerCase().startsWith("input(s)")) {
                 inputColumnIndex = cell.getColumnIndex();
             }
@@ -424,7 +428,7 @@ public class DTProcessor extends Operation {
     private boolean rowIsValid(Row row, int inputColumnIndex, int actionColumnIndex, int annotationColumnIndex) {
         // Currently considered "valid" if any of the four known columns have a non-null, non-empty string value.
         int[] valueColumnIndexes = new int[] { inputColumnIndex, actionColumnIndex, annotationColumnIndex };
-
+        
         for (int i=0; i < valueColumnIndexes.length - 1; i++) {
             int columnIndex = valueColumnIndexes[i];
             Cell cell = null;

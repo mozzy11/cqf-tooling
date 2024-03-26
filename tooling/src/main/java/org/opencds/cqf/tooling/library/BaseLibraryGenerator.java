@@ -130,7 +130,11 @@ public abstract class BaseLibraryGenerator<L extends IBaseResource, T extends Ba
         // And we've been given an output file
         // Shouldn't we _only_ be processing that file?
         File cqlContent = new File(pathToCQLContent);
-        cqlFiles = new File[] { cqlContent };
+        File cqlContentLib = new File("/home/moses/Desktop/Dev/Projects/HIV-DAK/CQF-TOOL/cqf-tooling/output/CQL/FHIRHelpers.cql");
+        File cqlContentLib2 = new File("/home/moses/Desktop/Dev/Projects/HIV-DAK/CQF-TOOL/cqf-tooling/output/CQL/FHIRCommon.cql");
+        File cqlContentLib3 = new File("/home/moses/Desktop/Dev/Projects/HIV-DAK/CQF-TOOL/cqf-tooling/output/CQL/WHOCommon.cql");
+        File cqlContentLib4 = new File("/home/moses/Desktop/Dev/Projects/HIV-DAK/CQF-TOOL/cqf-tooling/output/CQL/HIVIndicatorCommon.cql");
+        cqlFiles = new File[] { cqlContent ,cqlContentLib ,cqlContentLib2 ,cqlContentLib3 ,cqlContentLib4};
 /*
         cqlContentDir = cqlContent.getParentFile();
         pathToCqlContentDir = cqlContentDir.getPath();
@@ -161,6 +165,7 @@ public abstract class BaseLibraryGenerator<L extends IBaseResource, T extends Ba
     private void translateCqlFiles() {
         CqlTranslator translator;
         for (File cqlFile : cqlFiles) {
+            System.out.println(">>> files >" +cqlFile.getName());
             if (!cqlFile.getName().endsWith(".cql")) continue;
             translator = translate(cqlFile);
             translatorMap.put(translator.toELM().getIdentifier().getId(), translator);

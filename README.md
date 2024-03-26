@@ -49,9 +49,9 @@ For running directly in VS code , add this to Launch.json
             "projectName": "tooling-cli",
             "args": [
                 "-ProcessAcceleratorKit",
-                "-op=/Users/mutesasiramoses/Desktop/dev/HIV-DAK/cqf-tooling/output",
-                "-dep='HIV.A.Registration,HIV.B.HTSVisit,HIV.C.PrEPVisit,HIV.D.Care-TreatmentCore,HIV.D.Care-TreatmentAdditional,HIV.D.TB-HIV,HIV.E-F.PMTCT,HIV.G.Diagnostics,HIV.H.FollowUp,HIV.I.Referral,HIV.Surveillance,HIV.Configuration'",
-                "-pts=/Users/mutesasiramoses/Desktop/dev/HIV-DAK/cqf-tooling/input/WHO-UCN-HHS-SIA-2022.1-eng.xlsx"
+                "-op=/home/moses/Desktop/Dev/Projects/HIV-DAK/CQF-TOOL/cqf-tooling/output",
+                "-dep='HIV.ARegistration,HIV.BHTSvisit,HIV.CPrEPvisit,HIV.DCare-Treatment,HIV.DHIV-TB,HIV.E-FPMTCT,HIV.GDiagnostics,HIV.HFollow-up,HIV.IReferral,HIV.Prevention,HIV.Surveillance,HIV.Configuration'",
+                "-pts=/home/moses/Desktop/Dev/Projects/HIV-DAK/CQF-TOOL/cqf-tooling/input/WHO-UCN-HHS-SIA-2023.27-eng.xlsx"
             ]
         }
     ]
@@ -75,9 +75,34 @@ For Running  Decision Table Processor
             "projectName": "tooling-cli",
             "args": [
                 "-ProcessDecisionTables",
-                "-op=/Users/mutesasiramoses/Desktop/dev/HIV-DAK/cqf-tooling/output",
-                "-dtp='HIV.S.1RecommendedServices,HIV.DT.01Seriouslyill,HIV.DT.02TestUsingAlgorithm,HIV.DT.03RetestRecommendation,HIV.DT.04PrEPEligibility,HIV.DT.05PEPorPrEPRegimen,HIV.DT.06ScreenforTB,HIV.DT.07TreatmentFailure,HIV.DT.08DetScreenings,HIV.DT.09ClinicalstageHIV,HIV.DT.10DetermineARTRegimen,HIV.DT.11DrugInteractions'",
-                "-pts=/Users/mutesasiramoses/Desktop/dev/HIV-DAK/cqf-tooling/input/WHO-UCN-HHS-SIA-2022.2-eng.xlsx"
+                "-op=/home/moses/Desktop/Dev/Projects/HIV-DAK/CQF-TOOL/cqf-tooling/output",
+                "-dtp='HIV.S.1RecommendedServices,HIV.S.2MonitoringARTresponse,HIV.S.3CCAscreening,HIV.S.4HIVretesting,HIV.B2.DTSeriouslyill,HIV.B7.DTTestUsingAlgorithm,HIV.E4.DTTestusingAlgorithm,HIV.E12.DTIndeterminatetest,HIV.B9.DTRetestRecommendation,HIV.C7.DTPrEPSuitability,HIV.C23.DTPEPorPrEPRegimen,HIV.D4.DTScreenforTB,HIV.D12.DTDetScreenings,HIV.D15.DTClinicalstageHIV,HIV.D17.DTTreatmentFailure,HIV.D21.1.DTARTRegimen,HIV.D21.2.DTDrugInteractions'",
+                "-pts=/home/moses/Desktop/Dev/Projects/HIV-DAK/CQF-TOOL/cqf-tooling/input/WHO-UCN-HHS-SIA-2023.28-eng.xlsx"
+            ]
+        }
+    ]
+}
+```
+
+For Running  CQF to Library
+
+```bash 
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Run Java",
+            "request": "launch",
+            "mainClass": "org.opencds.cqf.tooling.cli.Main",
+            "projectName": "tooling-cli",
+            "args": [
+                "-CqlToR4Library",
+                "-op=/home/moses/Desktop/Dev/Projects/HIV-DAK/CQF-TOOL/cqf-tooling/output/Library",
+                "-ptcql=/home/moses/Desktop/Dev/Projects/HIV-DAK/CQF-TOOL/cqf-tooling/output/input/cql/HIVB2DT.cql",
             ]
         }
     ]
