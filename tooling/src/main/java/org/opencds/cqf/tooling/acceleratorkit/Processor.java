@@ -1189,8 +1189,10 @@ public class Processor extends Operation {
                         case "loinc":
                         case "loinc code":
                         case "loinc version 2.68 code":
+                        case "loinc version 2.74 code":
                         case "loinc version 2.68?code": colIds.put("LOINC", cell.getColumnIndex()); break;
                         case "loinc version 2.68 comments / considerations":
+                        case "loinc version 2.74 comments / considerations" :
                         case "loinc version 2.68?comments / considerations": colIds.put("LOINCComments", cell.getColumnIndex()); break;
                         case "rxnorm":
                         case "rxnorm code":
